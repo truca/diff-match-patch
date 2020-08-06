@@ -6,7 +6,8 @@
   "license": "MIT",
   "dependencies": {
     "diff-match-patch": "^1.0.5",
-    "esm": "^3.2.25"
+    "esm": "^3.2.25",
+    "socket.io": "^2.3.0"
   },
   "scripts": {
     "start": "node -r esm ./index.js"
