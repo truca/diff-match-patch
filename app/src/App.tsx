@@ -11,6 +11,7 @@ function Textbox() {
   const [time, setTime] = useState<Date>(new Date());
   const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
   const [text, setText] = useState('');
+  const [debouncing, setDebouncing] = useState(false);
 
   useEffect(() => {
     const socketAPI = openSocket('http://7d3c89f7a226.ngrok.io');
@@ -18,18 +19,26 @@ function Textbox() {
   }, []);
 
   useEffect(() => {
-    socket?.on('init', (text: string) => setText(text));
-    socket?.emit('subscribeToText');
-
-    socket?.on('broadcast', (msg: string) => {
-      setText(msg);
-      setTime(new Date());
-    });
-  }, [socket]);
+    if (socket) {
+      socket.on('init', (text: string) => setText(text));
+      socket.emit('subscribeToText');
+  
+      socket.off('broadcast');
+      socket.on('broadcast', (msg: string) => {
+        console.log('broadcast', debouncing, "msg", msg, "text", text);
+        if (!debouncing) {
+          setText(msg);
+          setTime(new Date());
+        }
+      });
+    }
+  }, [socket, debouncing, text, setText]);
 
   const updateBackend = useCallback(_.debounce((text: string) => {
     socket?.emit('message', text);
-  }, 500), [socket]);
+    setDebouncing(false);
+    console.log('called');
+  }, 1000), [socket]);
 
   return (
     <div style={{}}>
@@ -41,6 +50,8 @@ function Textbox() {
         value={text}
         onChange={(e) => {
           setText(e.target.value);
+          setDebouncing(true);
+          // only the message to the socket is debounced
           updateBackend(e.target.value);
         }}
       />

@@ -15,16 +15,16 @@ io.on('connection', (socket) => {
   });
   
   socket.on('message', (msg) => {
-    console.log(msg);
-    text = msg;
-    
+    const oldText = text;
+
     const diff = dmp.diff_main(text, msg);
     // dmp.diff_cleanupSemantic(diff);
     const patches = dmp.patch_make(diff);
     const results = dmp.patch_apply(patches, text);
-
+    
     text = results[0]
-
+    
+    console.log("\nmsg", "\n--final--\n", text, "\n--previous--\n", oldText,  "\n--msg--\n", msg, "\n--\n");
     io.emit('broadcast', text);
   });
 });
