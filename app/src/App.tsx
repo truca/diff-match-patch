@@ -4,19 +4,21 @@ import dayjs from 'dayjs';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Button from '@material-ui/core/Button';
 import logo from './logo.svg';
-import { subscribeToTimer } from './api';
+import { subscribe } from './api';
 import './App.css';
 
 
 
-function Textbox({ delay }: { delay: number }) {
+function Textbox() {
   const [time, setTime] = useState<Date>(new Date());
   const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
   const [text, setText] = useState('');
 
 
   useEffect(() => {
-    const socketAPI = subscribeToTimer(delay);
+    const socketAPI = subscribe(
+      (err: string | null, text: string) => setText(text)
+    );
     setSocket(socketAPI);
 
     socketAPI.on('broadcast', (msg: string) => {
@@ -67,8 +69,8 @@ function App() {
           justifyContent: 'space-around',
           marginTop: 30 
         }}>
-          <Textbox delay={10000} />
-          <Textbox delay={1000} />
+          <Textbox />
+          <Textbox />
         </div>
       </header>
     </div>
