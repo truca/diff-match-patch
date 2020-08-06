@@ -15,14 +15,13 @@ function Textbox() {
 
   useEffect(() => {
     const socketAPI = openSocket('http://7d3c89f7a226.ngrok.io');
+    socketAPI.on('init', (text: string) => setText(text));
+    socketAPI.emit('subscribeToText');
     setSocket(socketAPI);
   }, []);
 
   useEffect(() => {
     if (socket) {
-      socket.on('init', (text: string) => setText(text));
-      socket.emit('subscribeToText');
-  
       socket.off('broadcast');
       socket.on('broadcast', (msg: string) => {
         console.log('broadcast', debouncing, "msg", msg, "text", text);
