@@ -1,31 +1,31 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import openSocket from 'socket.io-client';
 import _ from 'lodash';
 import dayjs from 'dayjs';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Button from '@material-ui/core/Button';
 import logo from './logo.svg';
-import { subscribe } from './api';
 import './App.css';
-
-
 
 function Textbox() {
   const [time, setTime] = useState<Date>(new Date());
   const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
   const [text, setText] = useState('');
 
+  useEffect(() => {
+    const socketAPI = openSocket('http://7d3c89f7a226.ngrok.io');
+    setSocket(socketAPI);
+  }, []);
 
   useEffect(() => {
-    const socketAPI = subscribe(
-      (err: string | null, text: string) => setText(text)
-    );
-    setSocket(socketAPI);
+    socket?.on('init', (text: string) => setText(text));
+    socket?.emit('subscribeToText');
 
-    socketAPI.on('broadcast', (msg: string) => {
+    socket?.on('broadcast', (msg: string) => {
       setText(msg);
       setTime(new Date());
     });
-  }, []);
+  }, [socket]);
 
   const updateBackend = useCallback(_.debounce((text: string) => {
     socket?.emit('message', text);
