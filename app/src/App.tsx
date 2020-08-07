@@ -23,11 +23,10 @@ function Textbox() {
   const [text, setText] = useState('');
   const [previousText, setPreviousText] = useState('');
   const [debouncing, setDebouncing] = useState(false);
-  const previousDebouncing = usePrevious(debouncing);
 
   useEffect(() => {
-    const socketAPI = openSocket('http://df4078feeb8f.ngrok.io');
-    socketAPI.on('init', (text: string) => setText(text));
+    const socketAPI = openSocket('http://1d6887c32d3e.ngrok.io');
+    socketAPI.on('init', (msg: string) => { setText(msg); setPreviousText(msg); });
     socketAPI.emit('subscribeToText');
     setSocket(socketAPI);
   }, []);
@@ -39,28 +38,18 @@ function Textbox() {
         console.log('broadcast', debouncing, "msg", msg, "text", text);
         if (!debouncing) {
           setText(msg);
+          setPreviousText(msg);
           setTime(new Date());
         }
       });
     }
   }, [socket, debouncing, text, setText]);
 
-  useEffect(() => {
-    if (previousDebouncing !== debouncing && debouncing) {
-      setPreviousText(text);
-      console.log('setPreviousText', text);
-    }
-    if(previousDebouncing === debouncing && !debouncing) {
-      setPreviousText(text);
-    }
-  }, [debouncing, text, setPreviousText]);
-
-  const updateBackend = useCallback(_.debounce((text: string) => {
-    console.log('message', { message: text, previousMessage: previousText });
-    socket?.emit('message', { message: text, previousMessage: previousText });
+  const updateBackend = useCallback(_.debounce((message: string, previousMessage: string) => {
+    console.log('message', { message, previousMessage });
+    socket?.emit('message', { message, previousMessage });
     setDebouncing(false);
-    console.log('called');
-  }, 1000), [socket, text, previousText]);
+  }, 1000), [socket]);
 
   return (
     <div style={{}}>
@@ -72,24 +61,24 @@ function Textbox() {
       <TextareaAutosize 
         style={{ fontSize: 20 }}
         aria-label="minimum height"
-        rowsMin={3}
+        rowsMin={8}
         placeholder="Type something"
         value={text}
         onChange={(e) => {
           setDebouncing(true);
           setText(e.target.value);
           // only the message to the socket is debounced
-          updateBackend(e.target.value);
+          updateBackend(e.target.value, previousText);
         }}
       />
-      <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between' }}>
+      {/* <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between' }}>
         <Button variant="contained">
           Lock
         </Button>
         <Button variant="contained" color="primary">
           Send
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }
