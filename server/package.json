@@ -10,6 +10,7 @@
     "socket.io": "^2.3.0"
   },
   "scripts": {
-    "start": "node -r esm ./index.js"
+    "start": "node -r esm ./index.js",
+    "script": "node -r esm ./script.js"
   }
 }
