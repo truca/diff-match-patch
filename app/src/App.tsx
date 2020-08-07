@@ -3,19 +3,8 @@ import openSocket from 'socket.io-client';
 import _ from 'lodash';
 import dayjs from 'dayjs';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import Button from '@material-ui/core/Button';
 import logo from './logo.svg';
 import './App.css';
-
-function usePrevious(value: any) {
-  const ref = useRef();
-  
-  useEffect(() => {
-    ref.current = value;
-  }, [value]); // Only re-run if value changes
-  
-  return ref.current;
-}
 
 function Textbox() {
   const [time, setTime] = useState<Date>(new Date());
@@ -71,14 +60,6 @@ function Textbox() {
           updateBackend(e.target.value, previousText);
         }}
       />
-      {/* <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Button variant="contained">
-          Lock
-        </Button>
-        <Button variant="contained" color="primary">
-          Send
-        </Button>
-      </div> */}
     </div>
   );
 }
