@@ -19,9 +19,6 @@ io.on('connection', (socket) => {
     const oldText = text;
 
     var diff = dmp.diff_main(previousMessage, message, true);
-    // if (diff.length > 2) {
-    //   dmp.diff_cleanupSemantic(diff);
-    // }
 
     var patch_list = dmp.patch_make(previousMessage, message, diff);
     var patch_text = dmp.patch_toText(patch_list);
@@ -29,23 +26,6 @@ io.on('connection', (socket) => {
     var results = dmp.patch_apply(patches, text);
     
     text = results[0];
-    // var patches = dmp.patch_fromText(text);
-
-    // var ms_start = (new Date).getTime();
-    // var results = dmp.patch_apply(patches, message);
-    // var ms_end = (new Date).getTime();
-
-    // document.getElementById('patchdatediv').innerHTML =
-    //     'Time: ' + (ms_end - ms_start) / 1000 + 's';
-    // document.getElementById('text2b').value = results[0];
-    // results = results[1];
-
-    // const diff = dmp.diff_main(text, msg);
-    // dmp.diff_cleanupSemantic(diff);
-    // const patches = dmp.patch_make(diff);
-    // const results = dmp.patch_apply(patches, text);
-    
-    // text = results[0]
     console.log("previousMsg", previousMessage);
     
     console.log(

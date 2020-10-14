@@ -14,7 +14,7 @@ function Textbox() {
   const [debouncing, setDebouncing] = useState(false);
 
   useEffect(() => {
-    const socketAPI = openSocket('http://1d6887c32d3e.ngrok.io');
+    const socketAPI = openSocket('http://0d5f10631397.ngrok.io');
     socketAPI.on('init', (msg: string) => { setText(msg); setPreviousText(msg); });
     socketAPI.emit('subscribeToText');
     setSocket(socketAPI);
